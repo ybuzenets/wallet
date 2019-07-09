@@ -1,16 +1,19 @@
 plugins {
-    id 'java'
+	id 'org.springframework.boot' version '2.1.6.RELEASE'
+	id 'java'
 }
 
-group 'dev.buzenets'
-version '1.0-SNAPSHOT'
+apply plugin: 'io.spring.dependency-management'
 
-sourceCompatibility = 1.8
+group = 'dev.buzenets'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
