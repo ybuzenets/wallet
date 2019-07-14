@@ -4,16 +4,14 @@ import dev.buzenets.walletserver.model.Currency;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"USER_ID", "CURRENCY"})})
 public class Wallet {
     @Id
+    @GeneratedValue
     @Getter
     @Setter
     //could use a composite id on User/Currency pair but not entirely sure how to do it properly
@@ -21,7 +19,8 @@ public class Wallet {
 
     @Getter
     @Setter
-    private BigDecimal amount;
+    @Column(nullable = false)
+    private BigDecimal amount = BigDecimal.ZERO;
     @Getter
     @Setter
     @Enumerated(EnumType.STRING)
