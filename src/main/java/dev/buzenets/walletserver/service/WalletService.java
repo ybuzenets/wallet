@@ -2,6 +2,8 @@ package dev.buzenets.walletserver.service;
 
 import dev.buzenets.walletserver.entity.User;
 import dev.buzenets.walletserver.entity.Wallet;
+import dev.buzenets.walletserver.exception.InsufficientFundsException;
+import dev.buzenets.walletserver.exception.UnknownCurrencyException;
 import dev.buzenets.walletserver.model.Currency;
 import dev.buzenets.walletserver.repository.UserRepository;
 import dev.buzenets.walletserver.repository.WalletRepository;
@@ -23,7 +25,6 @@ public class WalletService {
 
     private final WalletRepository walletRepository;
     private final UserRepository userRepository;
-    @Autowired private WalletService self;
 
     public WalletService(WalletRepository walletRepository, UserRepository userRepository) {
         this.walletRepository = walletRepository;
@@ -33,7 +34,7 @@ public class WalletService {
     @Retryable(value = {DataIntegrityViolationException.class, CannotAcquireLockException.class})
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void deposit(Long userId, String curr, BigDecimal amount) {
-        final Wallet wallet = self.getWallet(userId, curr);
+        final Wallet wallet = getWallet(userId, curr);
 
         final BigDecimal total = wallet.getAmount()
             .add(amount);
@@ -44,7 +45,7 @@ public class WalletService {
     @Retryable(value = {DataIntegrityViolationException.class, CannotAcquireLockException.class})
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void withdraw(Long userId, String curr, BigDecimal amount) {
-        final Wallet wallet = self.getWallet(userId, curr);
+        final Wallet wallet = getWallet(userId, curr);
 
         final BigDecimal total = wallet.getAmount()
             .subtract(amount);
@@ -52,7 +53,7 @@ public class WalletService {
             wallet.setAmount(total);
             walletRepository.save(wallet);
         } else {
-            throw new IllegalArgumentException("Insufficient funds");
+            throw new InsufficientFundsException();
         }
     }
 
@@ -64,14 +65,18 @@ public class WalletService {
 
     @Retryable(DataIntegrityViolationException.class)
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public Wallet getWallet(Long userId, String curr) throws IllegalArgumentException {
-        final Currency currency = Currency.valueOf(curr);
-        return walletRepository.findWalletByUser_IdAndCurrency(userId, currency)
-            .orElseGet(() -> {
-                final Wallet tmp = new Wallet();
-                tmp.setUser(userRepository.getOne(userId));
-                tmp.setCurrency(currency);
-                return walletRepository.save(tmp);
-            });
+    public Wallet getWallet(Long userId, String curr) {
+        try {
+            final Currency currency = Currency.valueOf(curr);
+            return walletRepository.findWalletByUser_IdAndCurrency(userId, currency)
+                .orElseGet(() -> {
+                    final Wallet tmp = new Wallet();
+                    tmp.setUser(userRepository.getOne(userId));
+                    tmp.setCurrency(currency);
+                    return walletRepository.save(tmp);
+                });
+        } catch (IllegalArgumentException e) {
+            throw new UnknownCurrencyException(curr, e);
+        }
     }
 }
