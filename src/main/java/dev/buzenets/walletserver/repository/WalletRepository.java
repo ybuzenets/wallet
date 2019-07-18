@@ -6,8 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
-    Optional<Wallet> findWalletByUser_IdAndCurrency(Long userId, Currency currency);
+
+    Optional<Wallet> findWalletByUserAndCurrency(int userId, Currency currency);
+
+    Set<Wallet> findAllByUser(int user);
 }

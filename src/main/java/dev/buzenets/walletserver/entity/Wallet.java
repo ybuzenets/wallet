@@ -8,13 +8,12 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"USER_ID", "CURRENCY"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"USER", "CURRENCY"})})
 public class Wallet {
     @Id
     @GeneratedValue
     @Getter
     @Setter
-    //could use a composite id on User/Currency pair but not entirely sure how to do it properly
     private Long id;
 
     @Getter
@@ -26,10 +25,14 @@ public class Wallet {
     @Enumerated(EnumType.STRING)
     private Currency currency;
 
-    @ManyToOne
     @Getter
     @Setter
-    private User user;
+    //TODO: make another entity for user and use a foreign key.
+    // Left out for the simplicity purpose
+    private int user;
+
+    @Version
+    private int version;
 
     @Override
     public String toString() {
@@ -48,16 +51,20 @@ public class Wallet {
 
         final Wallet wallet = (Wallet) o;
 
-        if (currency != wallet.currency) {
+        if (user != wallet.user) {
             return false;
         }
-        return user.equals(wallet.user);
+        if (!id.equals(wallet.id)) {
+            return false;
+        }
+        return currency == wallet.currency;
     }
 
     @Override
     public int hashCode() {
-        int result = currency.hashCode();
-        result = 31 * result + user.hashCode();
+        int result = id.hashCode();
+        result = 31 * result + currency.hashCode();
+        result = 31 * result + user;
         return result;
     }
 }
