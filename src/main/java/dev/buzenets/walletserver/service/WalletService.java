@@ -21,7 +21,7 @@ public class WalletService {
         this.walletRepository = walletRepository;
     }
 
-    public void deposit(int userId, String curr, BigDecimal amount) {
+    public void deposit(long userId, String curr, BigDecimal amount) {
         final Wallet wallet = walletRepository.findWalletByUserAndCurrency(userId,
             Currency.valueOf(curr)
         )
@@ -36,7 +36,7 @@ public class WalletService {
         walletRepository.saveAndFlush(wallet);
     }
 
-    public void withdraw(int userId, String curr, BigDecimal amount) throws InsufficientFundsException {
+    public void withdraw(long userId, String curr, BigDecimal amount) throws InsufficientFundsException {
         final Wallet wallet = walletRepository.findWalletByUserAndCurrency(userId,
             Currency.valueOf(curr)
         )
@@ -56,7 +56,7 @@ public class WalletService {
         }
     }
 
-    public Set<Wallet> getBalance(int userId) {
+    public Set<Wallet> getBalance(long userId) {
         return walletRepository.findAllByUser(userId);
     }
 }

@@ -11,7 +11,7 @@ import java.util.Set;
 @Repository
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
 
-    Optional<Wallet> findWalletByUserAndCurrency(int userId, Currency currency);
+    Optional<Wallet> findWalletByUserAndCurrency(long userId, Currency currency);
 
-    Set<Wallet> findAllByUser(int user);
+    Set<Wallet> findAllByUser(long user);
 }

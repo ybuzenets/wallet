@@ -1,5 +1,6 @@
 plugins {
 	id 'org.springframework.boot' version '2.1.6.RELEASE'
+	id 'com.google.protobuf' version '0.8.8'
 	id 'java'
 }
 
@@ -9,19 +10,42 @@ group = 'dev.buzenets'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
+def grpcVersion = '1.22.1'
+
 repositories {
 	mavenCentral()
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	compile 'io.github.lognet:grpc-spring-boot-starter:3.3.0'
-	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
-	compile 'org.springframework.retry:spring-retry:1.2.4.RELEASE'
+/*	implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+	implementation "io.grpc:grpc-stub:${grpcVersion}"*/
+	implementation 'io.github.lognet:grpc-spring-boot-starter:3.3.0'
+	implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
+	implementation 'org.springframework.retry:spring-retry:1.2.4.RELEASE'
+
 	compileOnly 'org.projectlombok:lombok:1.18.8'
 	annotationProcessor 'org.projectlombok:lombok:1.18.8'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.0'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.0'
 	testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.4.1'
+}
+
+protobuf {
+	protoc { artifact = "com.google.protobuf:protoc:3.7.1" }
+	plugins {
+		grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
+	}
+	generateProtoTasks {
+		all()*.plugins { grpc {} }
+	}
+	generatedFilesBaseDir = "$projectDir/src"
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
 }

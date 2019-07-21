@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"USER", "CURRENCY"})})
@@ -29,10 +30,9 @@ public class Wallet {
     @Setter
     //TODO: make another entity for user and use a foreign key.
     // Left out for the simplicity purpose
-    private int user;
+    private long user;
 
-    @Version
-    private int version;
+    @Version private int version;
 
     @Override
     public String toString() {
@@ -51,20 +51,11 @@ public class Wallet {
 
         final Wallet wallet = (Wallet) o;
 
-        if (user != wallet.user) {
-            return false;
-        }
-        if (!id.equals(wallet.id)) {
-            return false;
-        }
-        return currency == wallet.currency;
+        return Objects.equals(id, wallet.id);
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + currency.hashCode();
-        result = 31 * result + user;
-        return result;
+        return id != null ? id.hashCode() : 0;
     }
 }

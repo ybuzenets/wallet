@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +24,7 @@ public class ThreadSafeWalletService {
         this.walletService = walletService;
     }
 
-    public void deposit(int userId, String curr, BigDecimal amount) {
+    public void deposit(long userId, String curr, BigDecimal amount) {
         try {
             final Currency currency = Currency.valueOf(curr);
             //instead of explicit locking, use ConcurrentHashMap internal synchronization
@@ -39,7 +37,7 @@ public class ThreadSafeWalletService {
         }
     }
 
-    public void withdraw(int userId, String curr, BigDecimal amount) {
+    public void withdraw(long userId, String curr, BigDecimal amount) {
         try {
             final Currency currency = Currency.valueOf(curr);
             locker.computeIfAbsent(new WalletDTO(userId, currency), walletDTO -> {
@@ -53,7 +51,7 @@ public class ThreadSafeWalletService {
         }
     }
 
-    public Collection<WalletDTO> getBalance(int userId) {
+    public Collection<WalletDTO> getBalance(long userId) {
 
         final Set<Wallet> existingWallets = walletService.getBalance(userId);
         final Set<WalletDTO> result = existingWallets.stream()

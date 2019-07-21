@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "dev.buzenets.walletserver.grpc";
+option java_outer_classname = "WalletProto";
+
+package wallet;
+
+import "google/protobuf/empty.proto";
+
+service Wallet {
+    rpc Deposit(WalletRequest) returns (google.protobuf.Empty) {}
+
+    rpc Withdraw(WalletRequest) returns (google.protobuf.Empty) {}
+
+    rpc Balance(WalletRequest) returns (BalanceSummary) {}
+}
+
+message WalletRequest {
+    int64 user = 1;
+    string amount = 2;
+    CURRENCY currency = 3;
+}
+
+message BalanceSummary {
+    map<string, string> amount = 1;
+}
+
+enum CURRENCY {
+    USD = 0;
+    EUR = 1;
+    GBP = 2;
+}

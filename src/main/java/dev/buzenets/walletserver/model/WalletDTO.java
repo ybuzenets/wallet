@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 public class WalletDTO {
 
     @Getter private final Long id;
-    @Getter private final int user;
+    @Getter private final long user;
     @Getter private final Currency currency;
     @Getter private final BigDecimal amount;
 
@@ -19,7 +19,7 @@ public class WalletDTO {
         amount = wallet.getAmount();
     }
 
-    public WalletDTO(int user, Currency currency) {
+    public WalletDTO(long user, Currency currency) {
         id = null;
         this.user = user;
         this.currency = currency;
@@ -45,7 +45,7 @@ public class WalletDTO {
 
     @Override
     public int hashCode() {
-        int result = user;
+        int result = (int) (user ^ (user >>> 32));
         result = 31 * result + currency.hashCode();
         return result;
     }
