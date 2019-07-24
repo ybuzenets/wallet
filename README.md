@@ -43,3 +43,8 @@ to package the program into JAR file and run it on another machine using
 ```
 java -jar wallet-server-0.0.1.jar
 ```
+
+There is an instance of the server running on `walletserver.buzenets.dev:6565` so you don't need to set it up if you only want to test that the client works
+
+# Notes #
+[Client implementation](https://github.com/ybuzenets/wallet-client)
