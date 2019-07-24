@@ -15,7 +15,11 @@ def grpcVersion = '1.22.1'
 repositories {
 	mavenCentral()
 }
-
+sourceSets {
+    main {
+        java.srcDirs += 'src/main/grpc'
+    }
+}
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'io.github.lognet:grpc-spring-boot-starter:3.3.0'
